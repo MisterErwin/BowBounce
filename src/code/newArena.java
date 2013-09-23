@@ -259,8 +259,11 @@ public class newArena implements Listener{
 		this.running = true;
 		this.laterstarter = 0;
 		
+		this.afktimeleft = this.afktime;
 		
 		restartafk();
+		
+		
 	}
 	
 	public void start(final CommandSender sender) {
@@ -528,6 +531,7 @@ public class newArena implements Listener{
 	
 	@EventHandler
 	public void onArrowStuck(ProjectileHitEvent event){
+		
 		if (!(event.getEntity() instanceof Arrow))
 			return;
 		
@@ -588,7 +592,7 @@ public class newArena implements Listener{
 				p2 = Bukkit.getPlayerExact(pn);
 				if (p2 == null)
 					continue;
-				p2.playSound(p2.getEyeLocation(), Sound.ARROW_HIT, 20, 10);
+				p2.playSound(p2.getEyeLocation(), Sound.NOTE_PLING, 20, 20);
 				p2.getInventory().setItem(1, new ItemStack(Material.ARROW, 1));
 			}
 		}
