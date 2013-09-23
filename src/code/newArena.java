@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Scanner;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,6 +30,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -230,18 +233,18 @@ public class newArena implements Listener{
 			Player p = Bukkit.getPlayerExact(pn);
 			if (p == null)
 				continue;
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
 			p.sendMessage(ChatColor.AQUA + "Bow Bounce starts now on map: " + ChatColor.YELLOW + this.title);
-			p.sendMessage(ChatColor.RED + "You have " + (this.afktime ) + " seconds time to shoot your arrow!");
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
-			p.sendMessage("");
+//			p.sendMessage(ChatColor.RED + "You have " + (this.afktime ) + " seconds time to shoot your arrow!");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
+//			p.sendMessage("");
 			
 			ItemStack b = new ItemStack(Material.BOW, 1);
 			b.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
@@ -500,10 +503,44 @@ public class newArena implements Listener{
 		
 		Vector d = event.getPlayer().getVelocity();
 		
+		d.setX(d.getX() * 1.2);
+		d.setZ(d.getZ() * 1.2);
+		
 		d.setY(1);
 		
 		event.getPlayer().setVelocity(d);
 		
+	}
+	
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event){
+
+		
+		if (!this.players.containsKey(event.getEntity().getName()))
+			return;
+		
+		event.setDeathMessage("");
+		event.setDroppedExp(0);
+		event.getDrops().clear();
+		
+	}
+	
+	@EventHandler
+	public void onArrowStuck(ProjectileHitEvent event){
+		if (!(event.getEntity() instanceof Arrow))
+			return;
+		
+		if (event.getEntity().getShooter() == null)
+			return;
+		
+		if (!(event.getEntity().getShooter() instanceof Player))
+			return;
+		
+		if (!this.players.containsKey(((Player) event.getEntity().getShooter()).getName()))
+			return;
+		
+		event.getEntity().remove();
 	}
 
 	@EventHandler
@@ -551,7 +588,7 @@ public class newArena implements Listener{
 				p2 = Bukkit.getPlayerExact(pn);
 				if (p2 == null)
 					continue;
-				p2.sendMessage(ChatColor.AQUA + "You got a new arrow!");
+				p2.playSound(p2.getEyeLocation(), Sound.ARROW_HIT, 20, 10);
 				p2.getInventory().setItem(1, new ItemStack(Material.ARROW, 1));
 			}
 		}
@@ -567,6 +604,8 @@ public class newArena implements Listener{
 			
 			@Override
 			public void run() {
+				if (!running)
+					return;
 				afktimeleft--;
 				
 				Player p2;
@@ -575,6 +614,8 @@ public class newArena implements Listener{
 					if (p2 == null)
 						continue;
 					p2.setLevel(afktimeleft);
+					if (afktimeleft < 5)
+						p2.playSound(p2.getEyeLocation(), Sound.NOTE_PLING, 20, 10);
 				}
 				
 				if (afktimeleft > 0)

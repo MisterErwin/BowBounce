@@ -104,7 +104,7 @@ public class newCommandManager implements CommandExecutor{
 				return true;
 			}else{
 				Player p = (Player) sender;
-				plugin.imm.create(p, "Select an arena!!", 9, new IconMenuClass.OptionClickEventHandler() {
+				plugin.imm.create(p, "Select an arena", 9, new IconMenuClass.OptionClickEventHandler() {
 					
 					@Override
 					public void onOptionClick(OptionClickEvent event) {

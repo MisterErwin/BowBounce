@@ -2,7 +2,7 @@ name: BowBounce
 main: code.BowBounce
 author: MisterErwin
 website: http://minecraftiangalaxy.com/
-version: 1.0
+version: 1.4
 commands:
    BB:
       description: Just see
